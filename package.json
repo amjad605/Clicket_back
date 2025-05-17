@@ -4,7 +4,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "npx tsc",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/index.ts"
   },
   "keywords": [],
   "author": "",
