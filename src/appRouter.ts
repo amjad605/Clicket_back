@@ -1,0 +1,12 @@
+import { Router } from "express";
+import authRouter from "./auth/auth.router";
+import eventsRouter from "./events/events.router";
+import { protect } from "./utils/protect";
+import usersRouter from "./users/users.router";
+import bookingRouter from "./bookings/bookings.router";
+const appRouter = Router();
+appRouter.use("/auth", authRouter);
+appRouter.use("/events", eventsRouter);
+appRouter.use("/users", protect, usersRouter);
+appRouter.use("/bookings", protect, bookingRouter);
+export default appRouter;
