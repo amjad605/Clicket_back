@@ -8,13 +8,12 @@ import cors from "cors";
 import { v2 as cloudinary } from "cloudinary";
 const app = express();
 app.use(cookieParser());
-cloudinary.config({
-  cloud_name: "dft8tywhd",
-  api_key: "844332542647854",
-  api_secret: "LlQ8lHsrgf8f3xs74iH_bdlJlfo", // Click 'View API Keys' above to copy your API secret
-});
-
 dotenv.config();
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 app.use(express.json({ limit: "5mb" }));
 mongoose
   .connect(process.env.DB_URL || "", {
