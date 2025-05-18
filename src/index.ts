@@ -24,6 +24,7 @@ mongoose
   });
 const corsOptions = {
   origin: [
+    "https://clicket-front-pbua-40d3si6k1-amjad605s-projects.vercel.app",
     "http://localhost:5173",
     "https://clicket-front-pbua-40d3si6k1-amjad605s-projects.vercel.app",
   ],
