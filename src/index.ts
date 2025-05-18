@@ -7,96 +7,50 @@ import appRouter from "./appRouter";
 import cors from "cors";
 import { v2 as cloudinary } from "cloudinary";
 
-// Initialize Express app
+dotenv.config();
 const app = express();
 
-// Load environment variables
-dotenv.config();
-
-const allowedOrigins = [
-  "https://clicket-front.vercel.app",
-  "http://localhost:5173",
-  /\.vercel\.app$/, // All Vercel preview deployments
-];
-
-const corsOptions = {
-  origin: (
-    origin: string | undefined,
-    callback: (err: Error | null, allow?: boolean) => void
-  ) => {
-    // Allow requests with no origin (like curl or mobile apps)
-    if (!origin) return callback(null, true);
-
-    const isAllowed = allowedOrigins.some((pattern) => {
-      if (typeof pattern === "string") return origin === pattern;
-      return pattern.test(origin);
-    });
-
-    if (isAllowed) {
-      console.log("✅ CORS allowed:", origin);
-      return callback(null, true);
-    }
-
-    console.error("❌ CORS blocked:", origin);
-    return callback(new Error("Not allowed by CORS"));
-  },
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"],
-  allowedHeaders: [
-    "Content-Type",
-    "Authorization",
-    "X-Requested-With",
-    "Accept",
-    "Origin",
-  ],
-  exposedHeaders: ["Set-Cookie"],
-  optionsSuccessStatus: 204,
-  preflightContinue: false,
-  maxAge: 86400,
-};
-
-// Apply CORS middleware
-app.use(cors(corsOptions));
-app.options("*", cors(corsOptions)); // Handle preflight requests
+// 🔓 CORS مفتوح للكل (Demo)
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    exposedHeaders: ["Set-Cookie"],
+  })
+);
+app.options("*", cors());
 
 // Middlewares
 app.use(express.json({ limit: "5mb" }));
 app.use(cookieParser());
 
-// Cloudinary Configuration
+// Cloudinary setup
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Database Connection
+// DB connection
 mongoose
   .connect(process.env.DB_URL || "", { maxPoolSize: 10 })
   .then(() => console.log("✅ Connected to database"))
-  .catch((err) => console.error("❌ Database connection error:", err));
+  .catch((err) => console.error("❌ Database error:", err));
 
 // Routes
 app.use(appRouter);
 
-// 404 Handler
+// 404 handler
 app.all("*", (req, res) => {
-  res.status(404).json({
-    status: "error",
-    message: "Endpoint not found",
-  });
+  res.status(404).json({ status: "error", message: "Endpoint not found" });
 });
 
-// Global Error Handler
+// Global error handler
 app.use(globalErrorHandler);
 
-// Server Startup
+// Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
-  console.log(
-    `🌐 Allowed CORS origins: ${allowedOrigins
-      .map((o) => o.toString())
-      .join(", ")}`
-  );
 });
