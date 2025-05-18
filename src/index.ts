@@ -13,10 +13,10 @@ const app = express();
 // 🔓 CORS مفتوح للكل (Demo)
 app.use(
   cors({
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    exposedHeaders: ["Set-Cookie"],
+    origin: ["*"],
+    methods: ["*"],
+    allowedHeaders: ["*"],
+    exposedHeaders: ["*"],
   })
 );
 app.options("*", cors());
