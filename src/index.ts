@@ -24,8 +24,7 @@ mongoose
   });
 const corsOptions = {
   origin: [
-    "https://clicket-front.vercel.app/",
-
+    "https://clicket-front.vercel.app",
     "http://localhost:5173",
     "https://clicket-front-pbua-40d3si6k1-amjad605s-projects.vercel.app",
   ],
@@ -33,6 +32,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 app.use(express.json());
 
