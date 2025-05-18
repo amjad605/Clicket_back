@@ -13,7 +13,6 @@ const app = express();
 // Load environment variables
 dotenv.config();
 
-// 1. CORS Configuration (MUST come first)
 const allowedOrigins = [
   "https://clicket-front.vercel.app",
   "http://localhost:5173",
@@ -67,6 +66,11 @@ app.use(cors(corsOptions));
 
 // Explicit OPTIONS handler for all routes
 app.options("*", cors(corsOptions));
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*"); // أو اكتب الدومين اللي عايزه بس
+  res.header("Access-Control-Allow-Headers", "*");
+  next();
+});
 
 // 2. Other Middleware
 app.use(express.json({ limit: "5mb" }));
