@@ -23,7 +23,10 @@ mongoose
     console.log("Connected to database");
   });
 const corsOptions = {
-  origin: ["http://localhost:5173"],
+  origin: [
+    "http://localhost:5173",
+    "https://clicket-front-pbua-40d3si6k1-amjad605s-projects.vercel.app",
+  ],
   credentials: true,
 };
 
