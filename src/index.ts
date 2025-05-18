@@ -37,6 +37,15 @@ app.use(express.json());
 
 app.use(appRouter);
 
+app.all("*", (req, res) => {
+  res.status(404).json({
+    status: "error",
+    data: {
+      message: "Endpoint Not found",
+    },
+  });
+});
+
 app.use(globalErrorHandler);
 app.listen(process.env.PORT, () => {
   console.log(`Server is running on port ${process.env.PORT}`);
