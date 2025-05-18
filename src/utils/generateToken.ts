@@ -8,16 +8,15 @@ export const generateTokenAndSetCookie = (
     const token = jwt.sign({ id }, process.env.JWT_SECRET as string, {
       expiresIn: "15d",
     });
+    const isProduction = process.env.NODE_ENV === "production";
 
     res.cookie("jwt", token, {
-      maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days
+      maxAge: 15 * 24 * 60 * 60 * 1000,
       httpOnly: true,
-      sameSite: "none",
-      secure: true,
-
+      sameSite: isProduction ? "none" : "lax",
+      secure: isProduction,
       path: "/",
     });
-
     return token;
   } catch (error) {
     console.error("Error generating token:", error);
