@@ -24,18 +24,20 @@ const corsOptions = {
     origin: string | undefined,
     callback: (err: Error | null, allow?: boolean) => void
   ) => {
-    // Allow requests with no origin (like mobile apps or curl requests)
+    // Allow requests with no origin (like curl or mobile apps)
     if (!origin) return callback(null, true);
 
-    if (
-      allowedOrigins.some((pattern) => {
-        if (typeof pattern === "string") return origin === pattern;
-        return pattern.test(origin);
-      })
-    ) {
+    const isAllowed = allowedOrigins.some((pattern) => {
+      if (typeof pattern === "string") return origin === pattern;
+      return pattern.test(origin);
+    });
+
+    if (isAllowed) {
+      console.log("✅ CORS allowed:", origin);
       return callback(null, true);
     }
 
+    console.error("❌ CORS blocked:", origin);
     return callback(new Error("Not allowed by CORS"));
   },
   credentials: true,
@@ -43,36 +45,21 @@ const corsOptions = {
   allowedHeaders: [
     "Content-Type",
     "Authorization",
-    "authorization",
     "X-Requested-With",
     "Accept",
     "Origin",
-    "Access-Control-Allow-Headers",
-    "Access-Control-Request-Headers",
   ],
-  exposedHeaders: [
-    "Set-Cookie",
-    "Authorization",
-    "authorization",
-    "Content-Length",
-  ],
+  exposedHeaders: ["Set-Cookie"],
   optionsSuccessStatus: 204,
   preflightContinue: false,
-  maxAge: 86400, // 24 hours
+  maxAge: 86400,
 };
 
 // Apply CORS middleware
 app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // Handle preflight requests
 
-// Explicit OPTIONS handler for all routes
-app.options("*", cors(corsOptions));
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*"); // أو اكتب الدومين اللي عايزه بس
-  res.header("Access-Control-Allow-Headers", "*");
-  next();
-});
-
-// 2. Other Middleware
+// Middlewares
 app.use(express.json({ limit: "5mb" }));
 app.use(cookieParser());
 
@@ -83,16 +70,16 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// 3. Database Connection
+// Database Connection
 mongoose
   .connect(process.env.DB_URL || "", { maxPoolSize: 10 })
-  .then(() => console.log("Connected to database"))
-  .catch((err) => console.error("Database connection error:", err));
+  .then(() => console.log("✅ Connected to database"))
+  .catch((err) => console.error("❌ Database connection error:", err));
 
-// 4. Routes
+// Routes
 app.use(appRouter);
 
-// 5. 404 Handler
+// 404 Handler
 app.all("*", (req, res) => {
   res.status(404).json({
     status: "error",
@@ -100,15 +87,15 @@ app.all("*", (req, res) => {
   });
 });
 
-// 6. Global Error Handler
+// Global Error Handler
 app.use(globalErrorHandler);
 
 // Server Startup
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
   console.log(
-    `Allowed CORS origins: ${allowedOrigins
+    `🌐 Allowed CORS origins: ${allowedOrigins
       .map((o) => o.toString())
       .join(", ")}`
   );
