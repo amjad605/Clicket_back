@@ -25,7 +25,6 @@ mongoose
 const corsOptions = {
   origin: ["http://localhost:5173"],
   credentials: true,
-  exposedHeaders: ["set-cookie"],
 };
 
 app.use(cors(corsOptions));
