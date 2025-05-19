@@ -13,46 +13,13 @@ const cors_1 = __importDefault(require("cors"));
 const cloudinary_1 = require("cloudinary");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
-const allowedOrigins = [
-    "https://clicket-front.vercel.app",
-    "http://localhost:5173",
-    /\.vercel\.app$/, // All Vercel preview deployments
-];
 const corsOptions = {
-    origin: (origin, callback) => {
-        // Allow requests with no origin (like mobile apps or curl requests)
-        if (!origin)
-            return callback(null, true);
-        if (allowedOrigins.some((pattern) => {
-            if (typeof pattern === "string")
-                return origin === pattern;
-            return pattern.test(origin);
-        })) {
-            return callback(null, true);
-        }
-        return callback(new Error("Not allowed by CORS"));
-    },
+    origin: [
+        "https://clicket-front.vercel.app",
+        "http://localhost:5173",
+        "https://clicket-front-pbua-40d3si6k1-amjad605s-projects.vercel.app",
+    ],
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"],
-    allowedHeaders: [
-        "Content-Type",
-        "Authorization",
-        "authorization",
-        "X-Requested-With",
-        "Accept",
-        "Origin",
-        "Access-Control-Allow-Headers",
-        "Access-Control-Request-Headers",
-    ],
-    exposedHeaders: [
-        "Set-Cookie",
-        "Authorization",
-        "authorization",
-        "Content-Length",
-    ],
-    optionsSuccessStatus: 204,
-    preflightContinue: false,
-    maxAge: 86400, // 24 hours
 };
 app.use((0, cors_1.default)(corsOptions));
 app.options("*", (0, cors_1.default)());
