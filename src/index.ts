@@ -10,13 +10,12 @@ import { v2 as cloudinary } from "cloudinary";
 dotenv.config();
 const app = express();
 
-// 🔓 CORS مفتوح للكل (Demo)
 app.use(
   cors({
-    origin: ["*"],
-    methods: ["*"],
-    allowedHeaders: ["*"],
-    exposedHeaders: ["*"],
+    origin: "*",
+    methods: "*",
+    allowedHeaders: "*",
+    exposedHeaders: "*",
   })
 );
 app.options("*", cors());
