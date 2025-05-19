@@ -11,31 +11,75 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const appRouter_1 = __importDefault(require("./appRouter"));
 const cors_1 = __importDefault(require("cors"));
 const cloudinary_1 = require("cloudinary");
-const app = (0, express_1.default)();
-app.use((0, cookie_parser_1.default)());
 dotenv_1.default.config();
+const app = (0, express_1.default)();
+const allowedOrigins = [
+    "https://clicket-front.vercel.app",
+    "http://localhost:5173",
+    /\.vercel\.app$/, // All Vercel preview deployments
+];
+const corsOptions = {
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin)
+            return callback(null, true);
+        if (allowedOrigins.some((pattern) => {
+            if (typeof pattern === "string")
+                return origin === pattern;
+            return pattern.test(origin);
+        })) {
+            return callback(null, true);
+        }
+        return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"],
+    allowedHeaders: [
+        "Content-Type",
+        "Authorization",
+        "authorization",
+        "X-Requested-With",
+        "Accept",
+        "Origin",
+        "Access-Control-Allow-Headers",
+        "Access-Control-Request-Headers",
+    ],
+    exposedHeaders: [
+        "Set-Cookie",
+        "Authorization",
+        "authorization",
+        "Content-Length",
+    ],
+    optionsSuccessStatus: 204,
+    preflightContinue: false,
+    maxAge: 86400, // 24 hours
+};
+app.use((0, cors_1.default)(corsOptions));
+app.options("*", (0, cors_1.default)());
+// Middlewares
+app.use(express_1.default.json({ limit: "5mb" }));
+app.use((0, cookie_parser_1.default)());
+// Cloudinary setup
 cloudinary_1.v2.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET,
 });
-app.use(express_1.default.json({ limit: "5mb" }));
+// DB connection
 mongoose_1.default
-    .connect(process.env.DB_URL || "", {
-    maxPoolSize: 10,
-})
-    .then(() => {
-    console.log("Connected to database");
-});
-const corsOptions = {
-    origin: ["http://localhost:5173"],
-    credentials: true,
-    exposedHeaders: ["set-cookie"],
-};
-app.use((0, cors_1.default)(corsOptions));
-app.use(express_1.default.json());
+    .connect(process.env.DB_URL || "", { maxPoolSize: 10 })
+    .then(() => console.log("✅ Connected to database"))
+    .catch((err) => console.error("❌ Database error:", err));
+// Routes
 app.use(appRouter_1.default);
+// 404 handler
+app.all("*", (req, res) => {
+    res.status(404).json({ status: "error", message: "Endpoint not found" });
+});
+// Global error handler
 app.use(GlobalErrorHandler_1.globalErrorHandler);
-app.listen(process.env.PORT, () => {
-    console.log(`Server is running on port ${process.env.PORT}`);
+// Start server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
 });

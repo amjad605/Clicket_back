@@ -10,11 +10,12 @@ const generateTokenAndSetCookie = (id, res) => {
         const token = jsonwebtoken_1.default.sign({ id }, process.env.JWT_SECRET, {
             expiresIn: "15d",
         });
+        const isProduction = process.env.NODE_ENV === "production";
         res.cookie("jwt", token, {
-            maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days
+            maxAge: 15 * 24 * 60 * 60 * 1000,
             httpOnly: true,
-            sameSite: "lax",
-            secure: false,
+            sameSite: isProduction ? "none" : "lax",
+            secure: isProduction,
             path: "/",
         });
         return token;
