@@ -19,7 +19,6 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options("*", cors());
 
 // Middlewares
 app.use(express.json({ limit: "5mb" }));
@@ -42,9 +41,6 @@ mongoose
 app.use(appRouter);
 
 // 404 handler
-app.all("*", (req, res) => {
-  res.status(404).json({ status: "error", message: "Endpoint not found" });
-});
 
 // Global error handler
 app.use(globalErrorHandler);

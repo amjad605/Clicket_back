@@ -22,7 +22,6 @@ const corsOptions = {
     credentials: true,
 };
 app.use((0, cors_1.default)(corsOptions));
-app.options("*", (0, cors_1.default)());
 // Middlewares
 app.use(express_1.default.json({ limit: "5mb" }));
 app.use((0, cookie_parser_1.default)());
@@ -40,9 +39,6 @@ mongoose_1.default
 // Routes
 app.use(appRouter_1.default);
 // 404 handler
-app.all("*", (req, res) => {
-    res.status(404).json({ status: "error", message: "Endpoint not found" });
-});
 // Global error handler
 app.use(GlobalErrorHandler_1.globalErrorHandler);
 // Start server
